@@ -6,7 +6,7 @@ async function handler(req, res) {
 
   try {
     const eventsData = await axios.get(
-      "https://hospitality.admin.legends.blcdemo.com/api/catalog/events",
+      `${process.env.BASE_API_URL}/api/catalog/events`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

@@ -3,7 +3,7 @@ import axios from "axios";
 export default async function handler(req, res) {
   try {
     const { data } = await axios.post(
-      "https://hospitality.admin.legends.blcdemo.com/auth/oauth/token?grant_type=client_credentials",
+      `${process.env.BASE_API_URL}/auth/oauth/token?grant_type=client_credentials`,
       {},
       {
         auth: {
