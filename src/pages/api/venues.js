@@ -1,39 +1,23 @@
-// import axios from "axios";
+import tokenValidation from "@/middleware/tokenValidation";
+import axios from "axios";
 
-import axiosInstance from "./axios";
-
-export default async function handler(req, res) {
-  console.log("hereeee in venues");
-  console.log("req.body", req.body.token);
-  console.log("req.body", req.body.axiosIns);
-  const axios = axiosInstance;
+async function handler(req, res) {
+  const accessToken = req.headers.authorization;
 
   try {
     const venuesData = await axios.get(
       "https://hospitality.admin.legends.blcdemo.com/api/catalog/venues",
       {
-        // headers: {
-        //   // Authorization: `Bearer ${accessToken}`,
-        //   "x-context-request":
-        //     '{"tenantId":"Hospitality","applicationId":"01GPYEXET5B7Y61HW8TB4R0YWH"}',
-        // },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "x-context-request": `{"tenantId":"${process.env.TENANT_ID}","applicationId":"${process.env.APPLICATION_ID}"}`,
+        },
       }
     );
-    // console.log("response", venuesData.data);
-    res.status(200).json(venuesData.data);
+    res.status(200).json({ venuesData: venuesData.data, accessToken });
   } catch (err) {
-    console.log(err.message);
-    console.log(err);
     res.status(500).json({ error: err.message });
   }
 }
-//   const accessToken = localStorage.getItem("broadleaf_token");
-//   const accessTokenCookie = req.headers.cookie;
-//   console.log(
-//     "accessToken in events",
-//     accessTokenCookie.substring(accessTokenCookie.indexOf("=") + 1)
-//   );
-//   const accessToken = accessTokenCookie.substring(
-//     accessTokenCookie.indexOf("=") + 1
-//   );
-//   console.log({ accessTokenCookie });
+
+export default tokenValidation(handler);
