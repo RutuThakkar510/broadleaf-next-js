@@ -5,6 +5,7 @@ import setAuthToken from "@/utils/setAuthToken";
 const Home = () => {
   const [events, setEvents] = useState([]);
   const [venues, setVenues] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const validateToken = (accessToken) => {
     const localToken = localStorage.getItem("broadleafToken");
@@ -31,6 +32,11 @@ const Home = () => {
     validateToken(response.data.accessToken);
     setVenues(response.data.venuesData);
   };
+  const getProducts = async () => {
+    const response = await axios.get("/api/products");
+    validateToken(response.data.accessToken);
+    setProducts(response.data.productData.content);
+  };
 
   useEffect(() => {
     getToken();
@@ -41,6 +47,7 @@ const Home = () => {
       <div>
         <button onClick={() => getEvents()}>Get Events</button>
         <button onClick={() => getVenues()}>Get Venues</button>
+        <button onClick={() => getProducts()}>Get Products</button>
       </div>
       {events.length > 0 && (
         <div>
@@ -71,6 +78,36 @@ const Home = () => {
           })}
         </div>
       )}
+
+      {events.length > 0 && venues.length > 0 && (
+        <h1>List of events based on venue</h1>
+      )}
+      {events.length > 0 &&
+        venues.length > 0 &&
+        events.map((eventItem) => {
+          console.log("eventItem", eventItem.legendsVenue.id);
+          const venueFiltered = venues.filter((venue) => {
+            return eventItem.legendsVenue.id === venue.id;
+          });
+          console.log(venueFiltered);
+          return (
+            <div key={eventItem.id}>
+              <h2>Venue: {venueFiltered[0]?.name}</h2>
+              <h4>Event: {eventItem.title}</h4>
+            </div>
+          );
+        })}
+
+      {products.length > 0 && <h1>Products</h1>}
+
+      {products.length > 0 &&
+        products.map((product) => {
+          return (
+            <div key={product.id}>
+              <h3>Name: {product.name}</h3>
+            </div>
+          );
+        })}
     </div>
   );
 };
